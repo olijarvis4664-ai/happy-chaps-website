@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Chaps - Dog Walking & Pet Sitting in Newquay</title>
+    
+    <!-- This imports Tailwind CSS for styling --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- This imports the Google Fonts we chose --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Lobster&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js CSS for the map --><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- This configures Tailwind with your logo's custom colors and fonts --><script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Logo Colors:
+                        brandPink: '#F3A9B6', // New Pink
+                        brandGrey: '#757575', // Logo Grey
+                        brandDark: '#333333', // Dark Grey (for text)
+                    },
+                    fontFamily: {
+                        // Logo Fonts:
+                        'heading': ['Fredoka One', 'sans-serif'], // For main headers
+                        'body': ['Nunito', 'sans-serif'],     // For all body text
+                        'script': ['Lobster', 'cursive']      // For script highlights
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- This <style> block contains all the custom CSS --><style>
+        /* This applies our custom fonts to the whole page */
+        body {
+            font-family: 'body', sans-serif;
+            color: #333333; /* brandDark */
+            margin: 0; /* Fixes potential gap */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'heading', sans-serif;
+        }
+
+        /* This ensures the page anchors (e.g., #about) land just below the sticky nav */
+        section[id] {
+            scroll-margin-top: 80px; /* Adjust this to match your nav's height */
+        }
+
+        /* Style for the lightbox backdrop */
+        #lightbox-overlay.hidden {
+            display: none;
+        }
+
+        /* --- Interactive "Why Choose Me?" Tab Styles --- */
+        
+        /* Style for the tab buttons */
+        .why-tab {
+            transition: all 0.3s ease;
+            border-right: 4px solid transparent; /* Default state */
+        }
+        
+        /* Style for the ACTIVE tab button */
+        .why-tab.active {
+            background-color: #FDF6F7; /* Very light pink */
+            color: #333333; /* brandDark */
+            border-right-color: #F3A9B6; /* brandPink */
+            transform: translateX(-5px);
+        }
+
+        /* Style for the content panels */
+        .why-panel {
+            display: none; /* Hidden by default */
+            animation: slideInFromRight 0.5s ease-out forwards;
+        }
+
+        .why-panel.active {
+            display: block; /* Shown when active */
+        }
+
+        /* The "cool animation" */
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Pulsing animation */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.6); /* Bigger pulse for better tap target */
+                opacity: 0.7;
+            }
+        }
+
+        /* --- Leaflet Map Styles --- */
+
+        /* Responsive map container */
+        .map-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            /* Default 1:1 aspect ratio for mobile */
+            padding-bottom: 100%; 
+        }
+
+        /* On screens 'md' (768px) and up, switch to 16:9ish */
+        @media (min-width: 768px) {
+            .map-container {
+                padding-bottom: 60%; /* 16:9.375 */
+            }
+        }
+
+        /* This holds the map */
+        #map {
+            position: absolute; /* Fills the container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* Custom DivIcon for Leaflet markers */
+        .leaflet-div-icon {
+            background: transparent;
+            border: none;
+        }
+
+        /* Our pulsing hotspot, now used by Leaflet */
+        .pulsing-hotspot {
+            width: 24px; /* Bigger target */
+            height: 24px; /* Bigger target */
+            background-color: #F3A9B6; /* brandPink */
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        /* Leaflet popup customization to match site */
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .leaflet-popup-content {
+            margin: 12px;
+            font-family: 'body', sans-serif;
+            width: 220px !important; /* Narrower for mobile */
+        }
+        .leaflet-popup-content h4 {
+            font-family: 'heading', sans-serif;
+            font-size: 1.1rem;
+            color: #333333; /* brandDark */
+            margin-bottom: 8px;
+        }
+        .leaflet-popup-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .leaflet-popup-content p {
+            font-size: 0.9rem;
+            color: #757575; /* brandGrey */
+            margin: 0;
+            line-height: 1.4;
+        }
+        .leaflet-popup-close-button {
+            top: 8px;
+            right: 8px;
+            padding: 4px;
+            color: #757575; /* brandGrey */
+        }
+
+    </style>
+</head>
+
+<body class="bg-white">
+
+    <!-- 
+      SECTION 1: NAVIGATION BAR
+    --><nav class="bg-white shadow-md sticky top-0 z-50 py-4 px-6 md:px-10">
+        <div class="container mx-auto flex justify-between items-center">
+            
+            <!-- Logo & Brand Name --><a href="#home" class="flex items-center space-x-3">
+                <img src="images/HClogo.jpg" alt="Happy Chaps Logo" class="h-12 w-12 rounded-full">
+                <span class="text-2xl md:text-3xl font-heading font-bold text-brandDark">Happy Chaps</span>
+            </a>
+
+            <!-- Desktop Navigation Links --><div class="hidden md:flex space-x-6 text-brandGrey font-semibold items-center">
+                <a href="#home" class="hover:text-brandPink transition duration-200">Home</a>
+                <a href="#about" class="hover:text-brandPink transition duration-200">About</a>
+                <a href="#services" class="hover:text-brandPink transition duration-200">Services</a>
+                <a href="#walks" class="hover:text-brandPink transition duration-200">My Walks</a>
+                <a href="#pricing" class="hover:text-brandPink transition duration-200">Pricing</a>
+                <a href="#testimonials" class="hover:text-brandPink transition duration-200">Testimonials</a>
+                <a href="#contact" class="bg-brandPink text-white px-5 py-2 rounded-full shadow hover:bg-opacity-90 transition duration-200">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Button (Hamburger) --><div class="md:hidden">
+                <button id="mobile-menu-button" class="text-brandDark">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="md:hidden hidden mt-4 space-y-2 text-center">
+            <a href="#home" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Home</a>
+            <a href="#about" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">About</a>
+            <a href="#services" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Services</a>
+            <a href="#walks" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">My Walks</a>
+            <a href="#pricing" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Pricing</a>
+            <a href="#testimonials" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Testimonials</a>
+            <a href="#contact" class="block mt-2 bg-brandPink text-white px-5 py-2 rounded-full shadow hover:bg-opacity-90">Contact</a>
+        </div>
+    </nav>
+
+
+    <!-- 
+      SECTION 2: HERO (HOME) 
+      UPDATED: Image path
+    --><section id="home" class="relative h-[80vh] min-h-[500px] bg-cover bg-center" 
+             style="background-image: url('images/beach-portrait.jpeg');">
+        <!-- Dark Overlay --><div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        
+        <!-- Hero Text --><div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-6">
+            <h1 class="text-5xl md:text-7xl font-bold font-heading drop-shadow-lg">Happy Chaps Dog Walking</h1>
+            <p class="text-xl md:text-2xl mt-4 font-body max-w-2xl drop-shadow-md">
+                Professional, reliable, and fun dog walking services in Newquay.
+            </p>
+            <a href="#contact" class="mt-8 bg-brandPink text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-opacity-90 transition duration-200 transform hover:scale-105">
+                Book a Meet & Greet
+            </a>
+        </div>
+    </section>
+
+
+    <!-- 
+      SECTION 3: ABOUT ME (ABOUT) 
+      UPDATED: Image path
+    --><section id="about" class="container mx-auto py-20 px-6">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <!-- About Me Image --><div>
+                <img src="images/hallie-portrait.jpeg" alt="Tim, your dog walker" class="rounded-lg shadow-xl w-full h-auto">
+            </div>
+            
+            <!-- About Me Text --><div class="text-left">
+                <h2 class="text-4xl md:text-5xl font-script text-brandDark mb-4">Hi, I'm Tim!</h2>
+                <p class="text-lg text-brandGrey leading-relaxed">
+                    I'm your local, fully insured dog walker for Newquay. I provide professional, reliable, and loving care for your dogs. 
+                </p>
+                <p class="text-lg text-brandGrey leading-relaxed mt-4">
+                    From sandy zoomies on the beaches to scenic strolls along the coastal paths, I make sure your dog gets the perfect blend of exercise, social time, and attention they deserve. My priority is simple: to keep your chap a happy chap!
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 
+      SECTION 4: WHY CHOOSE ME?
+    --><section id="why" class="bg-gray-50 py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-heading text-brandDark mb-12 text-center">Why Choose Me?</h2>
+            <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+                
+                <!-- Tab Buttons -->
+                <div class="md:col-span-1 flex flex-col space-y-2">
+                    <button class="why-tab active text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="1">
+                        Fully Insured
+                    </button>
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="2">
+                        Local Newquay Expert
+                    </button>
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="3">
+                        Photo Updates
+                    </button>
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="4">
+                        Personal & Reliable
+                    </button>
+                </div>
+                
+                <!-- Tab Content Panels -->
+                <div class="md:col-span-2 relative min-h-[250px] bg-white p-8 rounded-lg shadow-xl">
+                    
+                    <div id="why-panel-1" class="why-panel active">
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Fully Insured</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">Complete peace of mind knowing your pet is in safe, professional hands. I am fully insured for dog walking and pet sitting, covering your dog, your property, and myself.</p>
+                    </div>
+                    
+                    <div id="why-panel-2" class="why-panel">
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Local Newquay Expert</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">I know all the best, safest, and most exciting walking routes for your dog to enjoy. From quiet estuary paths to wide-open sandy beaches, I'll find the perfect spot for your dog's mood.</p>
+                    </div>
+                    
+                    <div id="why-panel-3" class="why-panel">
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Photo Updates</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">See your dog's adventures! I send photo updates from our walks so you can share in their fun and see where we've been. It's the best part of your work day!</p>
+                    </div>
+                    
+                    <div id="why-panel-4" class="why-panel">
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Personal & Reliable</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">This is my passion, not just a job. I provide a flexible, reliable, and personal service tailored to you and your dog's specific needs and routines.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 
+      SECTION 5: SERVICES 
+      UPDATED: Image paths
+    --><section id="services" class="container mx-auto py-20 px-6">
+        <h2 class="text-4xl font-heading text-brandDark text-center mb-12">My Services</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <!-- Service Card 1 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <img src="images/groupwalk-portrait.jpeg" alt="Dogs playing in a group" class="w-full h-48 object-cover">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Group Adventures</h3>
+                    <p class="text-brandGrey flex-grow">Let your pup join a social pack walk! A fantastic way for them to get great exercise, have fun, and make new friends.</p>
+                </div>
+            </div>
+            
+            <!-- Service Card 2 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <img src="images/spaniel-portrait.jpeg" alt="Dog on a solo walk" class="w-full h-48 object-cover">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Solo Walks</h3>
+                    <p class="text-brandGrey flex-grow">Perfect for one-on-one attention. I'll tailor the walk specifically to your dog's pace, preferences, and energy level.</p>
+                </div>
+            </div>
+            
+            <!-- Service Card 3 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <img src="images/cooper-portrait.jpeg" alt="Dog relaxing at home" class="w-full h-48 object-cover">
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Evening Pet Sitting</h3>
+                    <p class="text-brandGrey flex-grow">Heading out for the evening? I'll keep your dog company at home, ensuring they're safe, happy, and relaxed until you return.</p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+
+    <!-- 
+      SECTION: INTERACTIVE MAP
+    --><section id="walks" class="bg-gray-50 py-20 px-6">
+        <div class="container mx-auto max-w-6xl text-center">
+            <h2 class="text-4xl font-heading text-brandDark mb-12">My Favourite Newquay Walks</h2>
+            <p class="text-lg text-brandGrey max-w-3xl mx-auto mb-12">
+                I'm a local expert, and I know the best spots. Here are a few of the places I love to take the dogs, chosen based on the weather, tides, and the energy of the pack!
+            </p>
+            
+            <!-- Map Container -->
+            <div class="map-container rounded-lg shadow-xl">
+                <!-- This div will become the map -->
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+    
+    <!-- 
+      SECTION 6: PRICING 
+    --><section id="pricing" class="py-20 px-6"> <!-- Removed bg-gray-50 to alternate colors -->
+        <h2 class="text-4xl font-heading text-brandDark text-center mb-12">Simple, Clear Pricing</h2>
+        <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+
+            <!-- Pricing Box 1 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+                <h3 class="text-2xl font-semibold text-brandDark mb-2">Group Walks</h3>
+                <p class="text-brandPink text-5xl font-bold font-heading mb-4">£15</p>
+                <p class="text-brandGrey flex-grow">(per 1-hour walk)</p>
+            </div>
+            
+            <!-- Pricing Box 2 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+                <h3 class="text-2xl font-semibold text-brandDark mb-2">Solo Walks</h3>
+                <p class="text-brandPink text-5xl font-bold font-heading mb-4">£25</p>
+                <p class="text-brandGrey flex-grow">(per 1-hour walk)</p>
+            </div>
+            
+            <!-- Pricing Box 3 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+                <h3 class="text-2xl font-semibold text-brandDark mb-2">Evening Pet Sitting</h3>
+                <p class="text-brandPink text-5xl font-bold font-heading mb-4">£15<span class="text-2xl">/hr</span></p>
+                <p class="text-brandGrey flex-grow">(2-hour minimum)</p>
+            </div>
+            
+        </div>
+    </section>
+
+    
+    <!-- 
+      SECTION 7: GALLERY 
+      UPDATED: All image paths corrected
+    --><section id="gallery" class="bg-gray-50 py-20 px-6"> <!-- Added bg-gray-50 -->
+        <h2 class="text-4xl md:text-5xl font-script text-brandDark text-center mb-12">Meet Some of the Happy Chaps!</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <img src="images/actionshot-portrait.jpeg" alt="Happy dog running" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/actionshot2-portrait.jpeg" alt="Happy dog playing" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/peaches-portrait.jpeg" alt="Happy dog portrait" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/hallie-portrait.jpeg" alt="Happy dog portrait" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/dingoandcooper-portrait.jpeg" alt="Happy dogs portrait" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/muddy-portrait.jpeg" alt="Happy muddy dog" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/woods-portrait.jpeg" alt="Happy dog in the woods" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+            <img src="images/thesang-portrait.jpeg" alt="Happy dog at The SANG" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+        </div>
+    </section>
+
+    
+    <!-- 
+      SECTION 8: TESTIMONIALS 
+    --><section id="testimonials" class="py-20 px-6" style="background-color: #FDF6F7;"> 
+        <div class="container mx-auto max-w-6xl text-center">
+            <h2 class="text-4xl font-heading text-brandDark mb-12">What My Clients Say</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+                    <p class="text-brandGrey text-lg italic mb-4">"Tim is fantastic! Buster comes back so happy and tired every time. I trust him completely."</p>
+                    <p class="text-brandDark font-semibold font-heading">- Sarah & Buster</p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+                    <p class="text-brandGrey text-lg italic mb-4">"Finding a reliable dog walker in Newquay was tough. Happy Chaps is professional, flexible, and my spaniel adores Tim."</p>
+                    <p class="text-brandDark font-semibold font-heading">- Mark & Rosie</p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+                    <p class="text-brandGrey text-lg italic mb-4">"I use the evening pet sitting service, and it's a lifesaver. I can go out knowing my dog is safe and happy at home."</p>
+                    <p class="text-brandDark font-semibold font-heading">- Jenny & Max</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 
+      SECTION 9: CONTACT 
+    --><section id="contact" class="bg-gray-50 py-20 px-6">
+        <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+            
+            <!-- Contact Text --><div>
+                <h2 class="text-4xl font-heading text-brandDark mb-4">Let's Get Tails Wagging!</h2>
+                <p class="text-lg text-brandGrey leading-relaxed mb-6">
+                    Ready to make your chap a happy chap? Fill out the form to arrange a free meet-and-greet, or send me an email directly. I look forward to meeting you and your dog!
+                </p>
+                <a href="mailto:tim@happy-chaps.com" class="text-lg text-brandPink font-semibold hover:underline">
+                    tim@happy-chaps.com
+                </a>
+            </div>
+            
+            <!-- Contact Form --><div>
+                <form action="YOUR_FORMSPREE_URL_HERE" method="POST" class="bg-white p-8 rounded-lg shadow-xl space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-semibold text-brandGrey mb-1">Your Name</label>
+                        <input type="text" id="name" name="name" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-brandGrey mb-1">Your Email</label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
+                    </div>
+                    <div>
+                        <label for="dog-info" class="block text-sm font-semibold text-brandGrey mb-1">Your Dog's Name & Breed</label>
+                        <input type="text" id="dog-info" name="dog_info" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
+                    </div>
+                    <div>
+                        <label for="service" class="block text-sm font-semibold text-brandGrey mb-1">Service Interested In</label>
+                        <select id="service" name="service" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink bg-white">
+                            <option>Group Walk</option>
+                            <option>Solo Walk</option>
+                            <option>Evening Pet Sitting</option>
+                            <option>Other / Questions</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="message" class="block text-sm font-semibold text-brandGrey mb-1">Your Message</label>
+                        <textarea id="message" name="message" rows="4" required 
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink"></textarea>
+                    </div>
+                    <div>
+                        <button type="submit" 
+                                class="w-full bg-brandPink text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-opacity-90 transition duration-200 transform hover:scale-105">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </section>
+
+    
+    <!-- 
+      SECTION 10: FOOTER 
+    --><footer class="bg-brandDark text-gray-300 py-8 px-6 text-center">
+        <p>© <span id="current-year"></span> Happy Chaps Dog Walking | Serving Newquay, Cornwall
+            <span class="mx-2">|</span> 
+            <a href="#" class="hover:underline" onclick="event.preventDefault(); alert('Blog coming soon!');">Blog (Coming Soon)</a>
+        </p>
+    </footer>
+
+
+    <!-- 
+      LIGHTBOX HTML (Pop-up modal)
+    --><div id="lightbox-overlay" class="hidden fixed inset-0 z-[55] bg-black bg-opacity-75 flex items-center justify-center p-4">
+        <!-- Close Button -->
+        <button id="lightbox-close" class="absolute top-4 right-4 z-[65] text-white w-10 h-10 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <!-- Image Container -->
+        <div class="relative z-[60]">
+            <img id="lightbox-img" src="" alt="Happy Chaps Gallery Image" class="max-h-[80vh] max-w-[80vw] rounded-lg shadow-xl">
+        </div>
+        <!-- Previous Button -->
+        <button id="lightbox-prev" class="absolute left-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/.svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <!-- Next Button -->
+        <button id="lightbox-next" class="absolute right-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
+
+
+    <!-- 
+      JavaScript for all interactive features
+    -->
+    <!-- Leaflet.js library (must come BEFORE our script) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        // Wait for the DOM to be fully loaded before running scripts
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Mobile menu toggle ---
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close mobile menu when a link is clicked
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+
+            // --- Set current year in footer ---
+            const currentYearEl = document.getElementById('current-year');
+            if (currentYearEl) {
+                currentYearEl.textContent = new Date().getFullYear();
+            }
+
+            // --- "Why Choose Me?" Tab Functionality ---
+            const whyTabs = document.querySelectorAll('.why-tab');
+            const whyPanels = document.querySelectorAll('.why-panel');
+
+            if (whyTabs.length > 0 && whyPanels.length > 0) {
+                whyTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabNumber = tab.getAttribute('data-tab');
+
+                        // Deactivate all tabs and panels
+                        whyTabs.forEach(t => t.classList.remove('active'));
+                        whyPanels.forEach(p => p.classList.remove('active'));
+
+                        // Activate the clicked tab and corresponding panel
+                        tab.classList.add('active');
+                        const activePanel = document.getElementById(`why-panel-${tabNumber}`);
+                        if (activePanel) {
+                            activePanel.classList.add('active');
+                        }
+                    });
+                });
+            }
+
+            // --- Interactive Map Functionality (Leaflet.js) ---
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                
+                const isMobile = window.innerWidth < 768;
+
+                // 1. Initialize the map
+                const map = L.map('map', {
+                    scrollWheelZoom: false, // Always disable scroll wheel zoom
+                    dragging: !isMobile     // Disable dragging on mobile
+                }).setView([50.405, -5.065], 12);
+
+                // 2. Add the map tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                if (isMobile) {
+                    map.zoomControl.setPosition('bottomright');
+                }
+
+                // 3. Define our custom pulsing icon
+                const pulsingIcon = L.divIcon({
+                    className: 'leaflet-div-icon',
+                    html: `<div class="pulsing-hotspot"></div>`,
+                    iconSize: [24, 24],   
+                    iconAnchor: [12, 12] 
+                });
+
+                // 4. Define the walk locations and popups
+                const walks = [
+                    {
+                        lat: 50.413, lng: -5.097, // Fistral
+                        title: 'Fistral Beach',
+                        img: 'images/Fistral.image.jpg',
+                        desc: 'The classic! Perfect for high-energy dogs who love to run, chase balls, and splash in the surf on wide-open sands.'
+                    },
+                    {
+                        lat: 50.405985, lng: -5.085767, // The Gannel
+                        title: 'The Gannel Estuary',
+                        img: 'images/The Gannel.Image.145034.jpg',
+                        desc: 'A beautiful, tidal estuary walk. Best at low tide for sandy paths and paddling. A calm alternative to the busy beaches.'
+                    },
+                    {
+                        lat: 50.377267, lng: -5.131551, // Elenglaze
+                        title: 'Elenglaze Footpath',
+                        img: 'images/Elenglaze footpath.Image.1193734.jpg', // CORRECTED FILENAME
+                        desc: 'A hidden gem near Cubert. This lovely, gentle footpath follows a stream all the way down to the dunes at Holywell Bay.'
+                    },
+                    {
+                        lat: 50.411794, lng: -5.032314, // The SANG
+                        title: 'The SANG, Nansledan',
+                        img: 'images/The SANG.Image.151807.jpg',
+                        desc: 'A fantastic, popular spot near Nansledan. These enclosed fields are safe for off-lead fun, with a stream for dogs to play in.'
+                    },
+                    {
+                        lat: 50.413809, lng: -5.000081, // Colan Woods
+                        title: 'Colan Woods',
+                        img: 'images/Colan woods.Image.192414.jpg',
+                        desc: 'A peaceful woodland trail following a stream. Great for shaded walks (dogs on-lead near houses).'
+                    }
+                ];
+
+                // 5. Add markers and popups to the map
+                walks.forEach(walk => {
+                    const popupContent = `
+                        <img src="${walk.img}" alt="${walk.title}">
+                        <h4>${walk.title}</h4>
+                        <p>${walk.desc}</p>
+                    `;
+
+                    const marker = L.marker([walk.lat, walk.lng], {icon: pulsingIcon})
+                        .addTo(map)
+                        .bindPopup(popupContent, {
+                            autoPanPadding: L.point(50, 50) // Generous 50px padding
+                        });
+
+                    // --- THIS IS THE FIX ---
+                    // When a popup opens, find its image and add an 'onload' event
+                    marker.on('popupopen', (e) => {
+                        const popup = e.popup;
+                        const img = popup.getElement().querySelector('img');
+                        
+                        // When the image finishes loading, tell the popup to update
+                        img.onload = () => {
+                            popup.update();
+                        };
+                        
+                        // If the image is already cached, update immediately
+                        if (img.complete) {
+                            popup.update();
+                        }
+                    });
+                    // --- END OF FIX ---
+                });
+            }
+            // --- End of new map script ---
+
+
+            // --- Lightbox Gallery Functionality ---
+            const galleryImages = document.querySelectorAll('#gallery img');
+            const lightboxOverlay = document.getElementById('lightbox-overlay');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxClose = document.getElementById('lightbox-close');
+            const lightboxPrev = document.getElementById('lightbox-prev');
+            const lightboxNext = document.getElementById('lightbox-next');
+
+            if (galleryImages.length > 0 && lightboxOverlay) {
+                let currentIndex = 0;
+                // UPDATED: This now selects the new, correct image paths
+                const imageSources = Array.from(galleryImages).map(img => img.src);
+
+                function showImage(index) {
+                    if (index < 0) {
+                        index = imageSources.length - 1; // Wrap to end
+                    } else if (index >= imageSources.length) {
+                        index = 0; // Wrap to start
+                    }
+                    currentIndex = index;
+                    lightboxImg.src = imageSources[currentIndex];
+                    lightboxOverlay.classList.remove('hidden');
+                }
+
+                galleryImages.forEach((img, index) => {
+                    img.addEventListener('click', () => {
+                        showImage(index);
+GIST (formerly README):
+.co/400x400/757575/FFFFFF?text=image+12" alt="image 12" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
+                    });
+                });
+
+                lightboxClose.addEventListener('click', () => {
+                    lightboxOverlay.classList.add('hidden');
+                });
+
+                lightboxOverlay.addEventListener('click', (e) => {
+                    if (e.target === lightboxOverlay) {
+                        lightboxOverlay.classList.add('hidden');
+                    }
+                });
+
+                lightboxPrev.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showImage(currentIndex - 1);
+                });
+
+                lightboxNext.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showImage(currentIndex + 1);
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (!lightboxOverlay.classList.contains('hidden')) {
+                        if (e.key === 'ArrowLeft') {
+                            showImage(currentIndex - 1);
+                        } else if (e.key === 'ArrowRight') {
+                            showImage(currentIndex + 1);
+                        } else if (e.key === 'Escape') {
+                            lightboxOverlay.classList.add('hidden');
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+    
+</body>
+</html>
