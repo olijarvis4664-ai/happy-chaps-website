@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Chaps - Dog Walking & Pet Sitting in Newquay</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- This imports Tailwind CSS for styling --><script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- This imports the Google Fonts we chose --><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Lobster&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet.js CSS for the map --><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
-    <script>
+    <!-- This configures Tailwind with your logo's custom colors and fonts --><script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -34,7 +34,7 @@
         }
     </script>
     
-    <style>
+    <!-- This <style> block contains all the custom CSS --><style>
         /* This applies our custom fonts to the whole page */
         body {
             font-family: 'body', sans-serif;
@@ -192,15 +192,17 @@
 
 <body class="bg-white">
 
-    <nav class="bg-white shadow-md sticky top-0 z-50 py-4 px-6 md:px-10">
+    <!-- 
+        SECTION 1: NAVIGATION BAR
+     --><nav class="bg-white shadow-md sticky top-0 z-50 py-4 px-6 md:px-10">
         <div class="container mx-auto flex justify-between items-center">
             
-            <a href="#home" class="flex items-center space-x-3">
+            <!-- Logo & Brand Name --><a href="#home" class="flex items-center space-x-3">
                 <img src="images/HClogo.jpg" alt="Happy Chaps Logo" class="h-12 w-12 rounded-full">
                 <span class="text-2xl md:text-3xl font-heading font-bold text-brandDark">Happy Chaps</span>
             </a>
 
-            <div class="hidden md:flex space-x-6 text-brandGrey font-semibold items-center">
+            <!-- Desktop Navigation Links --><div class="hidden md:flex space-x-6 text-brandGrey font-semibold items-center">
                 <a href="#home" class="hover:text-brandPink transition duration-200">Home</a>
                 <a href="#about" class="hover:text-brandPink transition duration-200">About</a>
                 <a href="#services" class="hover:text-brandPink transition duration-200">Services</a>
@@ -210,14 +212,14 @@
                 <a href="#contact" class="bg-brandPink text-white px-5 py-2 rounded-full shadow hover:bg-opacity-90 transition duration-200">Contact</a>
             </div>
 
-            <div class="md:hidden">
+            <!-- Mobile Menu Button (Hamburger) --><div class="md:hidden">
                 <button id="mobile-menu-button" class="text-brandDark">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
         </div>
 
-        <div id="mobile-menu" class="md:hidden hidden mt-4 space-y-2 text-center">
+        <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="md:hidden hidden mt-4 space-y-2 text-center">
             <a href="#home" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Home</a>
             <a href="#about" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">About</a>
             <a href="#services" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Services</a>
@@ -229,11 +231,13 @@
     </nav>
 
 
-    <section id="home" class="relative h-[80vh] min-h-[500px] bg-cover bg-center" 
+    <!-- 
+        SECTION 2: HERO (HOME) 
+     --><section id="home" class="relative h-[80vh] min-h-[500px] bg-cover bg-center" 
              style="background-image: url('images/beach-portrait.jpeg');">
-        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <!-- Dark Overlay --><div class="absolute inset-0 bg-black bg-opacity-40"></div>
         
-        <div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-6">
+        <!-- Hero Text --><div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-6">
             <h1 class="text-5xl md:text-7xl font-bold font-heading drop-shadow-lg">Happy Chaps Dog Walking</h1>
             <p class="text-xl md:text-2xl mt-4 font-body max-w-2xl drop-shadow-md">
                 Professional, reliable, and fun dog walking services in Newquay.
@@ -245,13 +249,15 @@
     </section>
 
 
-    <section id="about" class="container mx-auto py-20 px-6">
+    <!-- 
+        SECTION 3: ABOUT ME (ABOUT) 
+     --><section id="about" class="container mx-auto py-20 px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
-            <div>
+            <!-- About Me Image --><div>
                 <img src="images/hallie-portrait.jpeg" alt="Tim, your dog walker" class="rounded-lg shadow-xl w-full h-auto">
             </div>
             
-            <div class="text-left">
+            <!-- About Me Text --><div class="text-left">
                 <h2 class="text-4xl md:text-5xl font-script text-brandDark mb-4">Hi, I'm Tim!</h2>
                 <p class="text-lg text-brandGrey leading-relaxed">
                     I'm your local, fully insured dog walker for Newquay. I provide professional, reliable, and loving care for your dogs. 
@@ -264,11 +270,14 @@
     </section>
 
 
-    <section id="why" class="bg-gray-50 py-20 px-6">
+    <!-- 
+        SECTION 4: WHY CHOOSE ME?
+     --><section id="why" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto">
             <h2 class="text-4xl font-heading text-brandDark mb-12 text-center">Why Choose Me?</h2>
             <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
                 
+                <!-- Tab Buttons -->
                 <div class="md:col-span-1 flex flex-col space-y-2">
                     <button class="why-tab active text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="1">
                         Fully Insured
@@ -284,6 +293,7 @@
                     </button>
                 </div>
                 
+                <!-- Tab Content Panels -->
                 <div class="md:col-span-2 relative min-h-[250px] bg-white p-8 rounded-lg shadow-xl">
                     
                     <div id="why-panel-1" class="why-panel active">
@@ -316,11 +326,13 @@
     </section>
 
 
-    <section id="services" class="container mx-auto py-20 px-6">
+    <!-- 
+        SECTION 5: SERVICES 
+     --><section id="services" class="container mx-auto py-20 px-6">
         <h2 class="text-4xl font-heading text-brandDark text-center mb-12">My Services</h2>
         <div class="grid md:grid-cols-3 gap-8">
             
-            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <!-- Service Card 1 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
                 <img src="images/groupwalk-portrait.jpeg" alt="Dogs playing in a group" class="w-full h-48 object-cover">
                 <div class="p-6 flex flex-col flex-grow">
                     <h3 class="text-2xl font-semibold text-brandDark mb-3">Group Adventures</h3>
@@ -328,7 +340,7 @@
                 </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <!-- Service Card 2 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
                 <img src="images/spaniel-portrait.jpeg" alt="Dog on a solo walk" class="w-full h-48 object-cover">
                 <div class="p-6 flex flex-col flex-grow">
                     <h3 class="text-2xl font-semibold text-brandDark mb-3">Solo Walks</h3>
@@ -336,7 +348,7 @@
                 </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <!-- Service Card 3 --><div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
                 <img src="images/cooper-portrait.jpeg" alt="Dog relaxing at home" class="w-full h-48 object-cover">
                 <div class="p-6 flex flex-col flex-grow">
                     <h3 class="text-2xl font-semibold text-brandDark mb-3">Evening Pet Sitting</h3>
@@ -348,36 +360,43 @@
     </section>
 
 
-    <section id="walks" class="bg-gray-50 py-20 px-6">
+    <!-- 
+        SECTION: INTERACTIVE MAP
+     --><section id="walks" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto max-w-6xl text-center">
             <h2 class="text-4xl font-heading text-brandDark mb-12">My Favourite Newquay Walks</h2>
             <p class="text-lg text-brandGrey max-w-3xl mx-auto mb-12">
                 I'm a local expert, and I know the best spots. Here are a few of the places I love to take the dogs, chosen based on the weather, tides, and the energy of the pack!
             </p>
             
+            <!-- Map Container -->
             <div class="map-container rounded-lg shadow-xl">
+                <!-- This div will become the map -->
                 <div id="map"></div>
             </div>
         </div>
     </section>
 
     
-    <section id="pricing" class="py-20 px-6"> <h2 class="text-4xl font-heading text-brandDark text-center mb-12">Simple, Clear Pricing</h2>
+    <!-- 
+        SECTION 6: PRICING 
+     --><section id="pricing" class="py-20 px-6"> <!-- Removed bg-gray-50 to alternate colors -->
+        <h2 class="text-4xl font-heading text-brandDark text-center mb-12">Simple, Clear Pricing</h2>
         <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
 
-            <div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+            <!-- Pricing Box 1 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
                 <h3 class="text-2xl font-semibold text-brandDark mb-2">Group Walks</h3>
                 <p class="text-brandPink text-5xl font-bold font-heading mb-4">£15</p>
                 <p class="text-brandGrey flex-grow">(per 1-hour walk)</p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+            <!-- Pricing Box 2 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
                 <h3 class="text-2xl font-semibold text-brandDark mb-2">Solo Walks</h3>
                 <p class="text-brandPink text-5xl font-bold font-heading mb-4">£25</p>
                 <p class="text-brandGrey flex-grow">(per 1-hour walk)</p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
+            <!-- Pricing Box 3 --><div class="bg-white rounded-lg shadow-xl p-8 text-center flex flex-col border-2 border-gray-50 transition duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-brandPink">
                 <h3 class="text-2xl font-semibold text-brandDark mb-2">Evening Pet Sitting</h3>
                 <p class="text-brandPink text-5xl font-bold font-heading mb-4">£15<span class="text-2xl">/hr</span></p>
                 <p class="text-brandGrey flex-grow">(2-hour minimum)</p>
@@ -387,7 +406,10 @@
     </section>
 
     
-    <section id="gallery" class="bg-gray-50 py-20 px-6"> <h2 class="text-4xl md:text-5xl font-script text-brandDark text-center mb-12">Meet Some of the Happy Chaps!</h2>
+    <!-- 
+        SECTION 7: GALLERY 
+     --><section id="gallery" class="bg-gray-50 py-20 px-6"> <!-- Added bg-gray-50 -->
+        <h2 class="text-4xl md:text-5xl font-script text-brandDark text-center mb-12">Meet Some of the Happy Chaps!</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <img src="images/actionshot-portrait.jpeg" alt="A happy dog running on the beach" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
             <img src="images/actionshot2-portrait.jpeg" alt="A dog playing with a ball" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
@@ -401,24 +423,29 @@
     </section>
 
     
-    <section id="testimonials" class="py-20 px-6" style="background-color: #FDF6F7;"> 
+    <!-- 
+        SECTION 8: TESTIMONIALS (UPDATED)
+     --><section id="testimonials" class="py-20 px-6" style="background-color: #FDF6F7;"> 
         <div class="container mx-auto max-w-6xl text-center">
             <h2 class="text-4xl font-heading text-brandDark mb-12">What My Clients Say</h2>
             <div class="grid md:grid-cols-3 gap-8">
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
-                    <p class="text-brandGrey text-lg italic mb-4">"Tim is fantastic! Buster comes back so happy and tired every time. I trust him completely."</p>
-                    <p class="text-brandDark font-semibold font-heading">- Sarah & Buster</p>
+                <!-- Testimonial 1: Dave C -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
+                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">"We have been using Tim at Happy Chaps since before he even started the business. Tim has always been nothing but professional, and our dog Cooper absolutely adores him. Happy Chaps has always managed to fit in with our needs, even with the occasional last minute request. The pictures that we receive after his walks are always a delight. Thank you Tim!"</p>
+                    <p class="text-brandDark font-semibold font-heading">- Dave & Cooper</p>
                 </div>
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
-                    <p class="text-brandGrey text-lg italic mb-4">"Finding a reliable dog walker in Newquay was tough. Happy Chaps is professional, flexible, and my spaniel adores Tim."</p>
-                    <p class="text-brandDark font-semibold font-heading">- Mark & Rosie</p>
+                <!-- Testimonial 2: Marcus M -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
+                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">"We recently visited Cornwall... I contacted Happy Chaps 2 weeks before and struck up a text convo with Happy Chaps so I knew I could trust him. Wilbur our mini schnauzer is very nervous with others but he did love his time with the team. they are the Dr Dolittle for dogs. I will always use Happy Chaps when looking for Wilbur cover. Nice one and thanks"</p>
+                    <p class="text-brandDark font-semibold font-heading">- Marcus & Wilbur</p>
                 </div>
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
-                    <p class="text-brandGrey text-lg italic mb-4">"I use the evening pet sitting service, and it's a lifesaver. I can go out knowing my dog is safe and happy at home."</p>
-                    <p class="text-brandDark font-semibold font-heading">- Jenny & Max</p>
+                <!-- Testimonial 3: Jack S -->
+                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
+                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">"Happy Chaps is great with Poppy and she loves being out with all of the the other dogs. He is very efficient, well organised and flexible. Really like that he uploads photos of the dogs on their adventures. Would highly recommend."</p>
+                    <p class="text-brandDark font-semibold font-heading">- Jack & Poppy</p>
                 </div>
 
             </div>
@@ -426,10 +453,12 @@
     </section>
 
 
-    <section id="contact" class="bg-gray-50 py-20 px-6">
+    <!-- 
+        SECTION 9: CONTACT 
+     --><section id="contact" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center max-w-6xl">
             
-            <div>
+            <!-- Contact Text --><div>
                 <h2 class="text-4xl font-heading text-brandDark mb-4">Let's Get Tails Wagging!</h2>
                 <p class="text-lg text-brandGrey leading-relaxed mb-6">
                     Ready to make your chap a happy chap? Fill out the form to arrange a free meet-and-greet, or send me an email directly. I look forward to meeting you and your dog!
@@ -439,7 +468,7 @@
                 </a>
             </div>
             
-            <div>
+            <!-- Contact Form --><div>
                 <form action="YOUR_FORMSPREE_URL_HERE" method="POST" class="bg-white p-8 rounded-lg shadow-xl space-y-4">
                     <div>
                         <label for="name" class="block text-sm font-semibold text-brandGrey mb-1">Your Name</label>
@@ -484,7 +513,9 @@
     </section>
 
     
-    <footer class="bg-brandDark text-gray-300 py-8 px-6 text-center">
+    <!-- 
+        SECTION 10: FOOTER 
+     --><footer class="bg-brandDark text-gray-300 py-8 px-6 text-center">
         <p>© <span id="current-year"></span> Happy Chaps Dog Walking | Serving Newquay, Cornwall
             <span class="mx-2">|</span> 
             <a href="#" class="hover:underline" onclick="event.preventDefault(); alert('Blog coming soon!');">Blog (Coming Soon)</a>
@@ -492,22 +523,32 @@
     </footer>
 
 
-    <div id="lightbox-overlay" class="hidden fixed inset-0 z-[55] bg-black bg-opacity-75 flex items-center justify-center p-4">
+    <!-- 
+        LIGHTBOX HTML (Pop-up modal)
+     --><div id="lightbox-overlay" class="hidden fixed inset-0 z-[55] bg-black bg-opacity-75 flex items-center justify-center p-4">
+        <!-- Close Button -->
         <button id="lightbox-close" class="absolute top-4 right-4 z-[65] text-white w-10 h-10 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
+        <!-- Image Container -->
         <div class="relative z-[60]">
             <img id="lightbox-img" src="" alt="Happy Chaps Gallery Image" class="max-h-[80vh] max-w-[80vw] rounded-lg shadow-xl">
         </div>
+        <!-- Previous Button -->
         <button id="lightbox-prev" class="absolute left-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
+        <!-- Next Button -->
         <button id="lightbox-next" class="absolute right-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
     </div>
 
 
+    <!-- 
+        JavaScript for all interactive features
+     -->
+    <!-- Leaflet.js library (must come BEFORE our script) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
@@ -606,7 +647,7 @@
                     {
                         lat: 50.377267, lng: -5.131551, // Elenglaze
                         title: 'Elenglaze Footpath',
-                        img: 'images/Elenglaze footpath.Image.1193734.jpg', // CORRECTED FILENAME
+                        img: 'images/Elenglaze footpath.Image.1193734.jpg',
                         desc: 'A hidden gem near Cubert. This lovely, gentle footpath follows a stream all the way down to the dunes at Holywell Bay.'
                     },
                     {
@@ -633,7 +674,7 @@
 
                     const marker = L.marker([walk.lat, walk.lng], {icon: pulsingIcon})
                         .addTo(map)
-                        .bindPopup(popup, {
+                        .bindPopup(popupContent, {
                             autoPanPadding: L.point(50, 50) // Generous 50px padding
                         });
 
@@ -669,7 +710,6 @@
 
             if (galleryImages.length > 0 && lightboxOverlay) {
                 let currentIndex = 0;
-                // UPDATED: This now selects the new, correct image paths
                 const imageSources = Array.from(galleryImages).map(img => img.src);
 
                 function showImage(index) {
