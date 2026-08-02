@@ -1,18 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" style="scroll-behavior: smooth;">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Chaps - Dog Walking & Pet Sitting in Newquay</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    <title>Dog Walking in Newquay, Cornwall | Happy Chaps</title>
+    <meta name="description" content="Friendly, fully insured dog walking and evening pet sitting in Newquay, Cornwall. Group walks from £15, solo walks £25, photo updates every time. Book a free meet and greet.">
+    <link rel="canonical" href="https://happy-chaps.com/">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#F3A9B6">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Happy Chaps Dog Walking">
+    <meta property="og:title" content="Dog Walking in Newquay, Cornwall | Happy Chaps">
+    <meta property="og:description" content="Friendly, fully insured dog walking and evening pet sitting in Newquay, Cornwall. Beach runs, estuary strolls and photo updates every walk.">
+    <meta property="og:url" content="https://happy-chaps.com/">
+    <meta property="og:image" content="https://happy-chaps.com/images/beach-portrait.jpeg">
+    <meta property="og:image:alt" content="A dog running on a Newquay beach on a Happy Chaps walk">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Dog Walking in Newquay, Cornwall | Happy Chaps">
+    <meta name="twitter:description" content="Friendly, fully insured dog walking and evening pet sitting in Newquay, Cornwall.">
+    <meta name="twitter:image" content="https://happy-chaps.com/images/beach-portrait.jpeg">
+
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="preload" as="image" href="images/beach-portrait.webp" type="image/webp" fetchpriority="high">
+
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Lobster&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -20,7 +43,7 @@
                     colors: {
                         // Logo Colors:
                         brandPink: '#F3A9B6', // New Pink
-                        brandGrey: '#757575', // Logo Grey
+                        brandGrey: '#5F5F5F', // Logo grey, darkened for contrast
                         brandDark: '#333333', // Dark Grey (for text)
                     },
                     fontFamily: {
@@ -33,100 +56,123 @@
             }
         }
     </script>
-    
+
     <style>
-        /* This applies our custom fonts to the whole page */
+        html { scroll-behavior: smooth; }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Applies our custom fonts to the whole page */
         body {
-            font-family: 'body', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: #333333; /* brandDark */
-            margin: 0; /* Fixes potential gap */
+            margin: 0;
         }
-        
+
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'heading', sans-serif;
+            font-family: 'Fredoka One', sans-serif;
+            font-weight: 400;
         }
 
-        /* This ensures the page anchors (e.g., #about) land just below the sticky nav */
+        /* Keyboard focus should always be visible */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #333333;
+            outline-offset: 2px;
+        }
+
+        /* Skip link, visible only when focused */
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            color: #333;
+            padding: 12px 20px;
+            font-weight: 700;
+        }
+        .skip-link:focus {
+            left: 8px;
+            top: 8px;
+        }
+
+        /* Page anchors land just below the sticky nav */
         section[id] {
-            scroll-margin-top: 80px; /* Adjust this to match your nav's height */
+            scroll-margin-top: 90px;
         }
 
-        /* Style for the lightbox backdrop */
         #lightbox-overlay.hidden {
             display: none;
         }
 
         /* --- Interactive "Why Choose Me?" Tab Styles --- */
-        
-        /* Style for the tab buttons */
+
         .why-tab {
             transition: all 0.3s ease;
-            border-right: 4px solid transparent; /* Default state */
+            border-right: 4px solid transparent;
         }
-        
-        /* Style for the ACTIVE tab button */
-        .why-tab.active {
+
+        .why-tab[aria-selected="true"] {
             background-color: #FDF6F7; /* Very light pink */
             color: #333333; /* brandDark */
             border-right-color: #F3A9B6; /* brandPink */
             transform: translateX(-5px);
         }
 
-        /* Style for the content panels */
         .why-panel {
-            display: none; /* Hidden by default */
+            display: none;
             animation: slideInFromRight 0.5s ease-out forwards;
         }
 
         .why-panel.active {
-            display: block; /* Shown when active */
+            display: block;
         }
 
-        /* The "cool animation" */
         @keyframes slideInFromRight {
-            0% {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            0%   { opacity: 0; transform: translateX(20px); }
+            100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* Pulsing animation */
         @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.6); /* Bigger pulse for better tap target */
-                opacity: 0.7;
-            }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.6); opacity: 0.7; }
+        }
+
+        /* --- Hero --- */
+        .hero {
+            background-image: url('images/beach-portrait.jpeg');
+            background-image: image-set(
+                url('images/beach-portrait.webp') type('image/webp'),
+                url('images/beach-portrait.jpeg') type('image/jpeg')
+            );
         }
 
         /* --- Leaflet Map Styles --- */
 
-        /* Responsive map container */
         .map-container {
             position: relative;
             overflow: hidden;
             width: 100%;
-            /* Default 1:1 aspect ratio for mobile */
-            padding-bottom: 100%; 
+            padding-bottom: 100%; /* 1:1 on mobile */
         }
 
-        /* On screens 'md' (768px) and up, switch to 16:9ish */
         @media (min-width: 768px) {
-            .map-container {
-                padding-bottom: 60%; /* 16:9.375 */
-            }
+            .map-container { padding-bottom: 60%; }
         }
 
-        /* This holds the map */
         #map {
-            position: absolute; /* Fills the container */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -134,16 +180,14 @@
             z-index: 10;
         }
 
-        /* Custom DivIcon for Leaflet markers */
         .leaflet-div-icon {
             background: transparent;
             border: none;
         }
 
-        /* Our pulsing hotspot, now used by Leaflet */
         .pulsing-hotspot {
-            width: 24px; /* Bigger target */
-            height: 24px; /* Bigger target */
+            width: 24px;
+            height: 24px;
             background-color: #F3A9B6; /* brandPink */
             border-radius: 50%;
             border: 2px solid white;
@@ -152,20 +196,19 @@
             cursor: pointer;
         }
 
-        /* Leaflet popup customization to match site */
         .leaflet-popup-content-wrapper {
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .leaflet-popup-content {
             margin: 12px;
-            font-family: 'body', sans-serif;
-            width: 220px !important; /* Narrower for mobile */
+            font-family: 'Nunito', sans-serif;
+            width: 220px !important;
         }
-        .leaflet-popup-content h4 {
-            font-family: 'heading', sans-serif;
+        .leaflet-popup-content h3 {
+            font-family: 'Fredoka One', sans-serif;
             font-size: 1.1rem;
-            color: #333333; /* brandDark */
+            color: #333333;
             margin-bottom: 8px;
         }
         .leaflet-popup-content img {
@@ -176,7 +219,7 @@
         }
         .leaflet-popup-content p {
             font-size: 0.9rem;
-            color: #757575; /* brandGrey */
+            color: #5F5F5F;
             margin: 0;
             line-height: 1.4;
         }
@@ -184,34 +227,210 @@
             top: 8px;
             right: 8px;
             padding: 4px;
-            color: #757575; /* brandGrey */
+            color: #5F5F5F;
         }
 
+        /* --- FAQ --- */
+        .faq-item summary {
+            cursor: pointer;
+            list-style: none;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '+';
+            float: right;
+            font-family: 'Fredoka One', sans-serif;
+            color: #F3A9B6;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .faq-item[open] summary::after { content: '\2212'; }
     </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["LocalBusiness", "ProfessionalService"],
+          "@id": "https://happy-chaps.com/#business",
+          "name": "Happy Chaps Dog Walking",
+          "alternateName": "Happy Chaps",
+          "url": "https://happy-chaps.com/",
+          "email": "tim@happy-chaps.com",
+          "description": "Fully insured dog walking and evening pet sitting in Newquay, Cornwall. Group pack walks, one-to-one solo walks and in-home evening sitting, with photo updates from every walk.",
+          "image": "https://happy-chaps.com/images/beach-portrait.jpeg",
+          "logo": "https://happy-chaps.com/images/HClogo-512.png",
+          "priceRange": "£15-£25",
+          "currenciesAccepted": "GBP",
+          "knowsLanguage": "en-GB",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Newquay",
+            "addressRegion": "Cornwall",
+            "addressCountry": "GB"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 50.4155,
+            "longitude": -5.0757
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Newquay" },
+            { "@type": "Place", "name": "Nansledan" },
+            { "@type": "Place", "name": "Crantock" },
+            { "@type": "Place", "name": "Cubert" },
+            { "@type": "Place", "name": "Holywell Bay" },
+            { "@type": "Place", "name": "Quintrell Downs" },
+            { "@type": "Place", "name": "St Columb Minor" },
+            { "@type": "Place", "name": "Porth" },
+            { "@type": "Place", "name": "Pentire" },
+            { "@type": "Place", "name": "Colan" }
+          ],
+          "founder": { "@type": "Person", "name": "Tim" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Dog walking and pet sitting services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "price": "15.00",
+                "priceCurrency": "GBP",
+                "url": "https://happy-chaps.com/#services",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Group Dog Walk",
+                  "serviceType": "Dog walking",
+                  "description": "A one-hour social pack walk around Newquay for exercise, play and dog friends."
+                }
+              },
+              {
+                "@type": "Offer",
+                "price": "25.00",
+                "priceCurrency": "GBP",
+                "url": "https://happy-chaps.com/#services",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Solo Dog Walk",
+                  "serviceType": "Dog walking",
+                  "description": "A one-hour one-to-one walk tailored to your dog's pace, energy level and training needs."
+                }
+              },
+              {
+                "@type": "Offer",
+                "price": "15.00",
+                "priceCurrency": "GBP",
+                "url": "https://happy-chaps.com/#services",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Evening Pet Sitting",
+                  "serviceType": "Pet sitting",
+                  "description": "In-home evening company for your dog, charged hourly with a two-hour minimum."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://happy-chaps.com/#website",
+          "url": "https://happy-chaps.com/",
+          "name": "Happy Chaps Dog Walking",
+          "inLanguage": "en-GB",
+          "publisher": { "@id": "https://happy-chaps.com/#business" }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://happy-chaps.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Which areas around Newquay do you cover?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "I cover Newquay and the surrounding villages, including Nansledan, Porth, Pentire, St Columb Minor, Quintrell Downs, Crantock, Cubert, Holywell Bay and Colan. If you are just outside that patch, get in touch and I will let you know if I can fit you in."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are you insured?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Happy Chaps is fully insured for dog walking and pet sitting, which covers your dog, your property and me while I am caring for them."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How much does dog walking in Newquay cost?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A one-hour group walk is £15, a one-hour solo walk is £25, and evening pet sitting is £15 per hour with a two-hour minimum."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What happens at a meet and greet?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The meet and greet is free and takes about half an hour at your home. We talk through your dog's routine, recall, temperament and any medical needs, your dog gets to meet me on their own turf, and we sort out keys and access if you are happy to go ahead."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many dogs are in a group walk?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Group walks are kept small and matched by temperament and energy level, so every dog in the pack gets on and gets proper attention."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you walk dogs in bad weather?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Cornish weather rarely stops a walk. I pick the route to suit the conditions and the tide, and I towel dogs off before they go back indoors. If conditions are genuinely unsafe, such as a storm warning, I will contact you and rearrange."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Will I hear how the walk went?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Every walk comes with photo updates, so you can see where we went and what your dog got up to."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 </head>
 
 <body class="bg-white">
 
-    <nav class="bg-white shadow-md sticky top-0 z-50 py-4 px-6 md:px-10">
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50 py-4 px-6 md:px-10" aria-label="Main">
         <div class="container mx-auto flex justify-between items-center">
-            
+
             <a href="#home" class="flex items-center space-x-3">
-                <img src="images/HClogo.jpg" alt="Happy Chaps Logo" class="h-12 w-12 rounded-full">
-                <span class="text-2xl md:text-3xl font-heading font-bold text-brandDark">Happy Chaps</span>
+                <img src="images/HClogo.jpg" alt="Happy Chaps Dog Walking logo" width="48" height="48" class="h-12 w-12 rounded-full">
+                <span class="text-2xl md:text-3xl font-heading text-brandDark">Happy Chaps</span>
             </a>
 
             <div class="hidden md:flex space-x-6 text-brandGrey font-semibold items-center">
                 <a href="#home" class="hover:text-brandPink transition duration-200">Home</a>
                 <a href="#about" class="hover:text-brandPink transition duration-200">About</a>
-                <a href="#services" class="hover:text-brandPink transition duration-200">Services & Pricing</a>
+                <a href="#services" class="hover:text-brandPink transition duration-200">Services &amp; Pricing</a>
                 <a href="#walks" class="hover:text-brandPink transition duration-200">My Walks</a>
                 <a href="#testimonials" class="hover:text-brandPink transition duration-200">Testimonials</a>
+                <a href="#faq" class="hover:text-brandPink transition duration-200">FAQs</a>
                 <a href="#contact" class="bg-brandPink text-white px-5 py-2 rounded-full shadow hover:bg-opacity-90 transition duration-200">Contact</a>
             </div>
 
             <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-brandDark">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <button id="mobile-menu-button" type="button" class="text-brandDark" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
         </div>
@@ -219,25 +438,26 @@
         <div id="mobile-menu" class="md:hidden hidden mt-4 space-y-2 text-center">
             <a href="#home" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Home</a>
             <a href="#about" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">About</a>
-            <a href="#services" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Services & Pricing</a>
+            <a href="#services" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Services &amp; Pricing</a>
             <a href="#walks" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">My Walks</a>
             <a href="#testimonials" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">Testimonials</a>
+            <a href="#faq" class="block py-2 text-brandGrey font-semibold hover:text-brandPink">FAQs</a>
             <a href="#contact" class="block mt-2 bg-brandPink text-white px-5 py-2 rounded-full shadow hover:bg-opacity-90">Contact</a>
         </div>
     </nav>
 
+    <main id="main">
 
-    <section id="home" class="relative h-[80vh] min-h-[500px] bg-cover bg-center" 
-             style="background-image: url('images/beach-portrait.jpeg');">
-        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
-        
+    <section id="home" class="hero relative h-[80vh] min-h-[500px] bg-cover bg-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
         <div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-6">
-            <h1 class="text-5xl md:text-7xl font-bold font-heading drop-shadow-lg">Happy Chaps Dog Walking</h1>
-            <p class="text-xl md:text-2xl mt-4 font-body max-w-2xl drop-shadow-md">
-                Professional, reliable, and fun dog walking services in Newquay.
+            <h1 class="text-4xl md:text-6xl font-heading drop-shadow-lg">Dog Walking in Newquay, Cornwall</h1>
+            <p class="text-xl md:text-2xl mt-4 max-w-2xl drop-shadow-md">
+                Happy Chaps is a friendly, fully insured dog walking and pet sitting service run by Tim, covering Newquay and the surrounding villages.
             </p>
             <a href="#contact" class="mt-8 bg-brandPink text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-opacity-90 transition duration-200 transform hover:scale-105">
-                Book a Meet & Greet
+                Book a free meet &amp; greet
             </a>
         </div>
     </section>
@@ -246,16 +466,19 @@
     <section id="about" class="container mx-auto py-20 px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
             <div>
-                <img src="images/hallie-portrait.jpeg" alt="Tim, your dog walker" class="rounded-lg shadow-xl w-full h-auto">
+                <picture>
+                    <source srcset="images/hallie-portrait.webp" type="image/webp">
+                    <img src="images/hallie-portrait.jpeg" alt="A happy dog out on a Happy Chaps walk near Newquay" width="675" height="900" loading="lazy" decoding="async" class="rounded-lg shadow-xl w-full h-auto max-h-[520px] object-cover">
+                </picture>
             </div>
-            
+
             <div class="text-left">
                 <h2 class="text-4xl md:text-5xl font-script text-brandDark mb-4">Hi, I'm Tim!</h2>
                 <p class="text-lg text-brandGrey leading-relaxed">
-                    I'm your local, fully insured dog walker for Newquay. I provide professional, reliable, and loving care for your dogs. 
+                    I'm your local, fully insured dog walker for Newquay. I provide professional, reliable and loving care for your dogs, whether that's a daily walk while you're at work or an evening sit while you're out.
                 </p>
                 <p class="text-lg text-brandGrey leading-relaxed mt-4">
-                    From sandy zoomies on the beaches to scenic strolls along the coastal paths, I make sure your dog gets the perfect blend of exercise, social time, and attention they deserve. My priority is simple: to keep your chap a happy chap!
+                    From sandy zoomies on Fistral to scenic strolls along the Gannel and the coastal paths, I make sure your dog gets the right blend of exercise, social time and attention. Small groups, matched by temperament, and photo updates every time. My priority is simple: to keep your chap a happy chap.
                 </p>
             </div>
         </div>
@@ -264,48 +487,48 @@
 
     <section id="why" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto">
-            <h2 class="text-4xl font-heading text-brandDark mb-12 text-center">Why Choose Me?</h2>
+            <h2 class="text-4xl font-heading text-brandDark mb-12 text-center">Why choose Happy Chaps?</h2>
             <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-                
-                <div class="md:col-span-1 flex flex-col space-y-2">
-                    <button class="why-tab active text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="1">
-                        Fully Insured
+
+                <div class="md:col-span-1 flex flex-col space-y-2" role="tablist" aria-orientation="vertical" aria-label="Reasons to choose Happy Chaps">
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" id="why-tab-1" type="button" role="tab" aria-selected="true" aria-controls="why-panel-1" data-tab="1">
+                        Fully insured
                     </button>
-                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="2">
-                        Local Newquay Expert
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" id="why-tab-2" type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="why-panel-2" data-tab="2">
+                        Local Newquay expert
                     </button>
-                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="3">
-                        Photo Updates
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" id="why-tab-3" type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="why-panel-3" data-tab="3">
+                        Photo updates
                     </button>
-                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" data-tab="4">
-                        Personal & Reliable
+                    <button class="why-tab text-left text-lg font-semibold text-brandGrey p-4 rounded-lg" id="why-tab-4" type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="why-panel-4" data-tab="4">
+                        Personal &amp; reliable
                     </button>
                 </div>
-                
+
                 <div class="md:col-span-2 relative min-h-[250px] bg-white p-8 rounded-lg shadow-xl">
-                    
-                    <div id="why-panel-1" class="why-panel active">
-                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Fully Insured</h3>
-                        <p class="text-brandGrey text-lg leading-relaxed">Complete peace of mind knowing your pet is in safe, professional hands. I am fully insured for dog walking and pet sitting, covering your dog, your property, and myself.</p>
+
+                    <div id="why-panel-1" class="why-panel active" role="tabpanel" aria-labelledby="why-tab-1" tabindex="0">
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h3 class="text-2xl text-brandDark mb-3">Fully insured</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">Complete peace of mind knowing your pet is in safe, professional hands. I am fully insured for dog walking and pet sitting, covering your dog, your property and myself.</p>
                     </div>
-                    
-                    <div id="why-panel-2" class="why-panel">
-                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Local Newquay Expert</h3>
-                        <p class="text-brandGrey text-lg leading-relaxed">I know all the best, safest, and most exciting walking routes for your dog to enjoy. From quiet estuary paths to wide-open sandy beaches, I'll find the perfect spot for your dog's mood.</p>
+
+                    <div id="why-panel-2" class="why-panel" role="tabpanel" aria-labelledby="why-tab-2" tabindex="0" hidden>
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <h3 class="text-2xl text-brandDark mb-3">Local Newquay expert</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">I know the safest and most interesting walking routes around Newquay, and I pick them to suit the tide and the weather. Quiet estuary paths on a busy August afternoon, wide-open sand out of season.</p>
                     </div>
-                    
-                    <div id="why-panel-3" class="why-panel">
-                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Photo Updates</h3>
-                        <p class="text-brandGrey text-lg leading-relaxed">See your dog's adventures! I send photo updates from our walks so you can share in their fun and see where we've been. It's the best part of your work day!</p>
+
+                    <div id="why-panel-3" class="why-panel" role="tabpanel" aria-labelledby="why-tab-3" tabindex="0" hidden>
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <h3 class="text-2xl text-brandDark mb-3">Photo updates</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">See your dog's adventures. I send photo updates from our walks so you know exactly where we've been and what they got up to while you were at work.</p>
                     </div>
-                    
-                    <div id="why-panel-4" class="why-panel">
-                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <h3 class="text-2xl font-semibold text-brandDark mb-3">Personal & Reliable</h3>
-                        <p class="text-brandGrey text-lg leading-relaxed">This is my passion, not just a job. I provide a flexible, reliable, and personal service tailored to you and your dog's specific needs and routines.</p>
+
+                    <div id="why-panel-4" class="why-panel" role="tabpanel" aria-labelledby="why-tab-4" tabindex="0" hidden>
+                        <svg class="w-12 h-12 text-brandPink mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h3 class="text-2xl text-brandDark mb-3">Personal &amp; reliable</h3>
+                        <p class="text-brandGrey text-lg leading-relaxed">This is my passion, not just a job. You get the same walker every time, a service built around your dog's routine, and someone who turns up when they say they will.</p>
                     </div>
 
                 </div>
@@ -315,205 +538,342 @@
 
 
     <section id="services" class="container mx-auto py-20 px-6">
-        <h2 class="text-4xl font-heading text-brandDark text-center mb-12">Services & Pricing</h2>
+        <h2 class="text-4xl font-heading text-brandDark text-center mb-4">Dog walking services &amp; prices in Newquay</h2>
+        <p class="text-lg text-brandGrey text-center max-w-3xl mx-auto mb-12">
+            Three straightforward options, no contracts and no joining fees. Every new client starts with a free meet and greet.
+        </p>
         <div class="grid md:grid-cols-3 gap-8">
-            
+
             <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <img src="images/groupwalk-portrait.jpeg" alt="Dogs playing in a group" class="w-full h-48 object-cover">
+                <picture>
+                    <source srcset="images/groupwalk-portrait.webp" type="image/webp">
+                    <img src="images/groupwalk-portrait.jpeg" alt="A small group of dogs on a pack walk in Newquay" width="675" height="900" loading="lazy" decoding="async" class="w-full h-48 object-cover">
+                </picture>
                 <div class="p-6 flex flex-col flex-grow">
-                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Group Adventures</h3>
-                    <p class="text-brandGrey flex-grow mb-4">Let your pup join a social pack walk! A fantastic way for them to get great exercise, have fun, and make new friends.</p>
+                    <h3 class="text-2xl text-brandDark mb-3">Group adventures</h3>
+                    <p class="text-brandGrey flex-grow mb-4">Let your dog join a small social pack walk. Great exercise, plenty of fun, and dog friends who actually suit their temperament.</p>
                     <div class="border-t border-gray-200 pt-4 text-center">
-                        <p class="text-brandPink text-4xl font-bold font-heading mb-2">£15</p>
-                        <p class="text-brandGrey">(per 1-hour walk)</p>
+                        <p class="text-brandPink text-4xl font-heading mb-2">£15</p>
+                        <p class="text-brandGrey">per 1-hour walk</p>
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <img src="images/spaniel-portrait.jpeg" alt="Dog on a solo walk" class="w-full h-48 object-cover">
+                <picture>
+                    <source srcset="images/spaniel-portrait.webp" type="image/webp">
+                    <img src="images/spaniel-portrait.jpeg" alt="A spaniel on a one-to-one solo dog walk in Cornwall" width="675" height="900" loading="lazy" decoding="async" class="w-full h-48 object-cover">
+                </picture>
                 <div class="p-6 flex flex-col flex-grow">
-                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Solo Walks</h3>
-                    <p class="text-brandGrey flex-grow mb-4">Perfect for one-on-one attention. I'll tailor the walk specifically to your dog's pace, preferences, and energy level.</p>
+                    <h3 class="text-2xl text-brandDark mb-3">Solo walks</h3>
+                    <p class="text-brandGrey flex-grow mb-4">One-to-one attention, tailored to your dog's pace, preferences and energy level. Ideal for nervous, elderly or reactive dogs.</p>
                     <div class="border-t border-gray-200 pt-4 text-center">
-                        <p class="text-brandPink text-4xl font-bold font-heading mb-2">£25</p>
-                        <p class="text-brandGrey">(per 1-hour walk)</p>
+                        <p class="text-brandPink text-4xl font-heading mb-2">£25</p>
+                        <p class="text-brandGrey">per 1-hour walk</p>
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <img src="images/cooper-portrait.jpeg" alt="Dog relaxing at home" class="w-full h-48 object-cover">
+                <picture>
+                    <source srcset="images/cooper-portrait.webp" type="image/webp">
+                    <img src="images/cooper-portrait.jpeg" alt="A relaxed dog at home during an evening pet sitting visit" width="675" height="900" loading="lazy" decoding="async" class="w-full h-48 object-cover">
+                </picture>
                 <div class="p-6 flex flex-col flex-grow">
-                    <h3 class="text-2xl font-semibold text-brandDark mb-3">Evening Pet Sitting</h3>
-                    <p class="text-brandGrey flex-grow mb-4">Heading out for the evening? I'll keep your dog company at home, ensuring they're safe, happy, and relaxed until you return.</p>
+                    <h3 class="text-2xl text-brandDark mb-3">Evening pet sitting</h3>
+                    <p class="text-brandGrey flex-grow mb-4">Heading out for the evening? I'll keep your dog company at home so they're safe, settled and not left alone until you're back.</p>
                     <div class="border-t border-gray-200 pt-4 text-center">
-                        <p class="text-brandPink text-4xl font-bold font-heading mb-2">£15<span class="text-2xl">/hr</span></p>
-                        <p class="text-brandGrey">(2-hour minimum)</p>
+                        <p class="text-brandPink text-4xl font-heading mb-2">£15<span class="text-2xl">/hr</span></p>
+                        <p class="text-brandGrey">2-hour minimum</p>
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </section>
 
 
     <section id="walks" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto max-w-6xl text-center">
-            <h2 class="text-4xl font-heading text-brandDark mb-12">My Favourite Newquay Walks</h2>
-            <p class="text-lg text-brandGrey max-w-3xl mx-auto mb-12">
-                I'm a local expert, and I know the best spots. Here are a few of the places I love to take the dogs, chosen based on the weather, tides, and the energy of the pack!
+            <h2 class="text-4xl font-heading text-brandDark mb-6">My favourite Newquay dog walks</h2>
+            <p class="text-lg text-brandGrey max-w-3xl mx-auto mb-10">
+                I know the best spots, and I choose them based on the weather, the tides and the energy of the pack. Tap a marker on the map to see where we go.
             </p>
-            
+
             <div class="map-container rounded-lg shadow-xl">
-                <div id="map"></div>
+                <div id="map" role="application" aria-label="Map of favourite dog walking spots around Newquay"></div>
+            </div>
+
+            <h3 class="text-2xl text-brandDark mt-12 mb-4">Areas I cover</h3>
+            <p class="text-lg text-brandGrey max-w-3xl mx-auto">
+                Happy Chaps covers Newquay and the villages around it, including
+                <strong>Nansledan</strong>, <strong>Porth</strong>, <strong>Pentire</strong>, <strong>St Columb Minor</strong>,
+                <strong>Quintrell Downs</strong>, <strong>Crantock</strong>, <strong>Cubert</strong>,
+                <strong>Holywell Bay</strong> and <strong>Colan</strong>.
+                If you're just outside that patch, ask anyway and I'll let you know if I can fit you in.
+            </p>
+        </div>
+    </section>
+
+
+    <section id="gallery" class="bg-gray-50 pb-20 px-6">
+        <div class="container mx-auto max-w-6xl">
+            <h2 class="text-4xl md:text-5xl font-script text-brandDark text-center mb-12">Meet some of the Happy Chaps</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/actionshot-portrait.jpeg" data-full-webp="images/actionshot-portrait.webp" data-caption="A dog sprinting along the beach on a Newquay walk">
+                    <picture>
+                        <source srcset="images/thumbs/actionshot-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/actionshot-portrait.jpeg" alt="A dog sprinting along the beach on a Newquay walk" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/actionshot2-portrait.jpeg" data-full-webp="images/actionshot2-portrait.webp" data-caption="A dog chasing a ball on a Happy Chaps group walk">
+                    <picture>
+                        <source srcset="images/thumbs/actionshot2-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/actionshot2-portrait.jpeg" alt="A dog chasing a ball on a Happy Chaps group walk" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/peaches2-portrait.jpeg" data-full-webp="images/peaches2-portrait.webp" data-caption="Peaches out on her walk in Newquay">
+                    <picture>
+                        <source srcset="images/thumbs/peaches2-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/peaches2-portrait.jpeg" alt="Peaches out on her walk in Newquay" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/hallie-portrait.jpeg" data-full-webp="images/hallie-portrait.webp" data-caption="Hallie enjoying a Happy Chaps walk">
+                    <picture>
+                        <source srcset="images/thumbs/hallie-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/hallie-portrait.jpeg" alt="Hallie enjoying a Happy Chaps walk" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/dingoandcooper-portrait.jpeg" data-full-webp="images/dingoandcooper-portrait.webp" data-caption="Dingo and Cooper on a pack walk together">
+                    <picture>
+                        <source srcset="images/thumbs/dingoandcooper-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/dingoandcooper-portrait.jpeg" alt="Dingo and Cooper on a pack walk together" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/muddy-portrait.jpeg" data-full-webp="images/muddy-portrait.webp" data-caption="A very muddy, very happy dog after a Cornish winter walk">
+                    <picture>
+                        <source srcset="images/thumbs/muddy-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/muddy-portrait.jpeg" alt="A very muddy, very happy dog after a Cornish winter walk" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/woods-portrait.jpeg" data-full-webp="images/woods-portrait.webp" data-caption="A dog exploring the woodland trail at Colan">
+                    <picture>
+                        <source srcset="images/thumbs/woods-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/woods-portrait.jpeg" alt="A dog exploring the woodland trail at Colan" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
+                <button type="button" class="gallery-item block rounded-lg overflow-hidden shadow-md transition duration-200 hover:opacity-80" data-full="images/thesang-portrait.jpeg" data-full-webp="images/thesang-portrait.webp" data-caption="A dog off-lead at The SANG in Nansledan">
+                    <picture>
+                        <source srcset="images/thumbs/thesang-portrait.webp" type="image/webp">
+                        <img src="images/thumbs/thesang-portrait.jpeg" alt="A dog off-lead at The SANG in Nansledan" width="500" height="500" loading="lazy" decoding="async" class="aspect-square object-cover w-full">
+                    </picture>
+                </button>
+
             </div>
         </div>
     </section>
 
-    
-    <section id="gallery" class="bg-gray-50 py-20 px-6"> <h2 class="text-4xl md:text-5xl font-script text-brandDark text-center mb-12">Meet Some of the Happy Chaps!</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <img src="images/actionshot-portrait.jpeg" alt="A happy dog running on the beach" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/actionshot2-portrait.jpeg" alt="A dog playing with a ball" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/peaches2-portrait.jpeg" alt="Peaches the dog" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/hallie-portrait.jpeg" alt="Hallie the dog" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/dingoandcooper-portrait.jpeg" alt="Two dogs, Dingo and Cooper" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-2S00 hover:opacity-80">
-            <img src="images/muddy-portrait.jpeg" alt="A happy muddy dog" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/woods-portrait.jpeg" alt="A dog walking in the woods" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-            <img src="images/thesang-portrait.jpeg" alt="A dog at The SANG, Nansledan" class="rounded-lg shadow-md aspect-square object-cover cursor-pointer transition duration-200 hover:opacity-80">
-        </div>
-    </section>
 
-    
-    <section id="testimonials" class="py-20 px-6" style="background-color: #FDF6F7;"> 
+    <section id="testimonials" class="py-20 px-6" style="background-color: #FDF6F7;">
         <div class="container mx-auto max-w-6xl text-center">
-            <h2 class="text-4xl font-heading text-brandDark mb-12">What My Clients Say</h2>
-            
+            <h2 class="text-4xl font-heading text-brandDark mb-12">What my clients say</h2>
+
             <div class="grid md:grid-cols-3 gap-8">
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
-                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">"We have been using Tim at Happy Chaps since before he even started the business. Tim has always been nothing but professional, and our dog Cooper absolutely adores him. Happy Chaps has always managed to fit in with our needs, even with the occasional last minute request. The pictures that we receive after his walks are always a delight. Thank you Tim!"</p>
-                    <p class="text-brandDark font-semibold font-heading">- Dave & Cooper</p>
-                </div>
+                <figure class="bg-white p-8 rounded-lg shadow-lg flex flex-col text-left">
+                    <blockquote class="text-brandGrey text-lg italic mb-4 flex-grow">"We have been using Tim at Happy Chaps since before he even started the business. Tim has always been nothing but professional, and our dog Cooper absolutely adores him. Happy Chaps has always managed to fit in with our needs, even with the occasional last minute request. The pictures that we receive after his walks are always a delight. Thank you Tim!"</blockquote>
+                    <figcaption class="text-brandDark font-heading">Dave &amp; Cooper</figcaption>
+                </figure>
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
-                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">"We recently visited Cornwall... I contacted Happy Chaps 2 weeks before and struck up a text convo with Happy Chaps so I knew I could trust him. Wilbur our mini schnauzer is very nervous with others but he did love his time with the team. they are the Dr Dolittle for dogs. I will always use Happy Chaps when looking for Wilbur cover. Nice one and thanks"</p>
-                    <p class="text-brandDark font-semibold font-heading">- Marcus & Wilbur</p>
-                </div>
+                <figure class="bg-white p-8 rounded-lg shadow-lg flex flex-col text-left">
+                    <blockquote class="text-brandGrey text-lg italic mb-4 flex-grow">"We recently visited Cornwall and I contacted Happy Chaps two weeks before. I struck up a text conversation with him so I knew I could trust him. Wilbur, our mini schnauzer, is very nervous with others but he did love his time with the team. They are the Dr Dolittle for dogs. I will always use Happy Chaps when looking for Wilbur cover. Nice one and thanks."</blockquote>
+                    <figcaption class="text-brandDark font-heading">Marcus &amp; Wilbur</figcaption>
+                </figure>
 
-                <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col">
-                    <p class="text-brandGrey text-lg italic mb-4 flex-grow">“Our collie X has been going on adventures with Tim since he was a nervous pup. He's grown up to be a slightly complex and high energy dog who needs a keen eye and the right doggy friends. There's no-one else I'd trust as much as I trust Happy Chaps owner Tim who has always been an incredibly supportive and wonderful dog walker. Tim goes above and beyond, ensures all the dogs have the time of their lives, and is 100% reliable. If you want peace of mind and happy, relaxed dog at the end of the day - Happy Chaps is the one for you.”</p>
-                    <p class="text-brandDark font-semibold font-heading">- Kassia & Dug</p>
-                </div>
+                <figure class="bg-white p-8 rounded-lg shadow-lg flex flex-col text-left">
+                    <blockquote class="text-brandGrey text-lg italic mb-4 flex-grow">"Our collie cross has been going on adventures with Tim since he was a nervous pup. He's grown up to be a slightly complex and high energy dog who needs a keen eye and the right doggy friends. There's no-one else I'd trust as much as I trust Happy Chaps owner Tim, who has always been an incredibly supportive and wonderful dog walker. Tim goes above and beyond, ensures all the dogs have the time of their lives, and is 100% reliable. If you want peace of mind and a happy, relaxed dog at the end of the day, Happy Chaps is the one for you."</blockquote>
+                    <figcaption class="text-brandDark font-heading">Kassia &amp; Dug</figcaption>
+                </figure>
 
             </div>
+        </div>
+    </section>
+
+
+    <section id="faq" class="container mx-auto py-20 px-6 max-w-4xl">
+        <h2 class="text-4xl font-heading text-brandDark text-center mb-12">Frequently asked questions</h2>
+
+        <div class="space-y-4">
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">Which areas around Newquay do you cover?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">I cover Newquay and the surrounding villages, including Nansledan, Porth, Pentire, St Columb Minor, Quintrell Downs, Crantock, Cubert, Holywell Bay and Colan. If you're just outside that patch, get in touch and I'll let you know if I can fit you in.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">Are you insured?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">Yes. Happy Chaps is fully insured for dog walking and pet sitting, which covers your dog, your property and me while I'm caring for them.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">How much does dog walking in Newquay cost?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">A one-hour group walk is £15, a one-hour solo walk is £25, and evening pet sitting is £15 per hour with a two-hour minimum. No contracts, no joining fees.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">What happens at a meet and greet?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">It's free and takes about half an hour at your home. We talk through your dog's routine, recall, temperament and any medical needs, your dog gets to meet me on their own turf, and we sort out keys and access if you're happy to go ahead.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">How many dogs are in a group walk?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">Group walks are kept small and matched by temperament and energy level, so every dog in the pack gets on and gets proper attention. If your dog wouldn't enjoy a group, a solo walk is the better fit.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">Do you walk dogs in bad weather?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">Yes. Cornish weather rarely stops a walk. I pick the route to suit the conditions and the tide, and I towel dogs off before they go back indoors. If conditions are genuinely unsafe, such as a storm warning, I'll contact you and rearrange.</p>
+            </details>
+
+            <details class="faq-item bg-gray-50 rounded-lg p-6">
+                <summary class="text-xl text-brandDark font-semibold">Will I hear how the walk went?</summary>
+                <p class="text-brandGrey text-lg leading-relaxed mt-4">Every walk comes with photo updates, so you can see where we went and what your dog got up to.</p>
+            </details>
+
         </div>
     </section>
 
 
     <section id="contact" class="bg-gray-50 py-20 px-6">
         <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center max-w-6xl">
-            
+
             <div>
-                <h2 class="text-4xl font-heading text-brandDark mb-4">Let's Get Tails Wagging!</h2>
+                <h2 class="text-4xl font-heading text-brandDark mb-4">Let's get tails wagging</h2>
                 <p class="text-lg text-brandGrey leading-relaxed mb-6">
-                    Ready to make your chap a happy chap? Fill out the form to arrange a free meet-and-greet, or send me an email directly. I look forward to meeting you and your dog!
+                    Ready to make your chap a happy chap? Fill in the form to arrange a free meet and greet, or email me directly. I look forward to meeting you and your dog.
+                </p>
+                <p class="text-lg text-brandGrey mb-2">
+                    <strong>Happy Chaps Dog Walking</strong><br>
+                    Newquay, Cornwall
                 </p>
                 <a href="mailto:tim@happy-chaps.com" class="text-lg text-brandPink font-semibold hover:underline">
                     tim@happy-chaps.com
                 </a>
             </div>
-            
+
             <div>
                 <form action="https://formspree.io/f/mvgvezko" method="POST" class="bg-white p-8 rounded-lg shadow-xl space-y-4">
+                    <input type="hidden" name="_subject" value="New enquiry from happy-chaps.com">
+                    <div aria-hidden="true" style="position:absolute; left:-9999px;">
+                        <label for="company">Leave this field empty</label>
+                        <input type="text" id="company" name="_gotcha" tabindex="-1" autocomplete="off">
+                    </div>
                     <div>
-                        <label for="name" class="block text-sm font-semibold text-brandGrey mb-1">Your Name</label>
-                        <input type="text" id="name" name="name" required 
+                        <label for="name" class="block text-sm font-semibold text-brandGrey mb-1">Your name</label>
+                        <input type="text" id="name" name="name" required autocomplete="name"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
                     </div>
                     <div>
-                        <label for="email" class="block text-sm font-semibold text-brandGrey mb-1">Your Email</label>
-                        <input type="email" id="email" name="email" required 
+                        <label for="email" class="block text-sm font-semibold text-brandGrey mb-1">Your email</label>
+                        <input type="email" id="email" name="email" required autocomplete="email"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
                     </div>
                     <div>
-                        <label for="dog-info" class="block text-sm font-semibold text-brandGrey mb-1">Your Dog's Name & Breed</label>
-                        <input type="text" id="dog-info" name="dog_info" 
+                        <label for="dog-info" class="block text-sm font-semibold text-brandGrey mb-1">Your dog's name &amp; breed</label>
+                        <input type="text" id="dog-info" name="dog_info"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink">
                     </div>
                     <div>
-                        <label for="service" class="block text-sm font-semibold text-brandGrey mb-1">Service Interested In</label>
-                        <select id="service" name="service" 
+                        <label for="service" class="block text-sm font-semibold text-brandGrey mb-1">Service you're interested in</label>
+                        <select id="service" name="service"
                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink bg-white">
-                            <option>Group Walk</option>
-                            <option>Solo Walk</option>
-                            <option>Evening Pet Sitting</option>
-                            <option>Other / Questions</option>
+                            <option value="Group walk">Group walk</option>
+                            <option value="Solo walk">Solo walk</option>
+                            <option value="Evening pet sitting">Evening pet sitting</option>
+                            <option value="Other / questions">Other / questions</option>
                         </select>
                     </div>
                     <div>
-                        <label for="message" class="block text-sm font-semibold text-brandGrey mb-1">Your Message</label>
-                        <textarea id="message" name="message" rows="4" required 
+                        <label for="message" class="block text-sm font-semibold text-brandGrey mb-1">Your message</label>
+                        <textarea id="message" name="message" rows="4" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brandPink focus:border-brandPink"></textarea>
                     </div>
                     <div>
-                        <button type="submit" 
+                        <button type="submit"
                                  class="w-full bg-brandPink text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-opacity-90 transition duration-200 transform hover:scale-105">
-                            Send Message
+                            Send message
                         </button>
                     </div>
                 </form>
             </div>
-            
+
         </div>
     </section>
 
-    
+    </main>
+
+
     <footer class="bg-brandDark text-gray-300 py-8 px-6 text-center">
-        <p>© <span id="current-year"></span> Happy Chaps Dog Walking | Serving Newquay, Cornwall
-            <span class="mx-2">|</span> 
-            <a href="#" class="hover:underline" onclick="event.preventDefault(); alert('Blog coming soon!');">Blog (Coming Soon)</a>
+        <p class="mb-2">Happy Chaps Dog Walking. Dog walking and pet sitting in Newquay, Cornwall.</p>
+        <p>
+            &copy; <span id="current-year">2026</span> Happy Chaps Dog Walking
+            <span class="mx-2" aria-hidden="true">|</span>
+            <a href="mailto:tim@happy-chaps.com" class="hover:underline">tim@happy-chaps.com</a>
+            <span class="mx-2" aria-hidden="true">|</span>
+            <a href="Documents/Happy%20Chaps%20Dog%20Walking%20-%20Terms%20of%20Service.pdf" class="hover:underline">Terms of Service</a>
         </p>
     </footer>
 
 
-    <div id="lightbox-overlay" class="hidden fixed inset-0 z-[55] bg-black bg-opacity-75 flex items-center justify-center p-4">
-        <button id="lightbox-close" class="absolute top-4 right-4 z-[65] text-white w-10 h-10 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition">
-            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="lightbox-overlay" class="hidden fixed inset-0 z-[55] bg-black bg-opacity-75 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Photo viewer">
+        <button id="lightbox-close" type="button" class="absolute top-4 right-4 z-[65] text-white w-10 h-10 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition" aria-label="Close photo viewer">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         <div class="relative z-[60]">
-            <img id="lightbox-img" src="" alt="Happy Chaps Gallery Image" class="max-h-[80vh] max-w-[80vw] rounded-lg shadow-xl">
+            <picture>
+                <source id="lightbox-source" srcset="" type="image/webp">
+                <img id="lightbox-img" src="" alt="" class="max-h-[80vh] max-w-[80vw] rounded-lg shadow-xl">
+            </picture>
         </div>
-        <button id="lightbox-prev" class="absolute left-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        <button id="lightbox-prev" type="button" class="absolute left-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block" aria-label="Previous photo">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
-        <button id="lightbox-next" class="absolute right-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block">
-            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <button id="lightbox-next" type="button" class="absolute right-4 z-[65] text-white w-12 h-12 bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition hidden md:block" aria-label="Next photo">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
     </div>
 
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+
     <script>
-        // Wait for the DOM to be fully loaded before running scripts
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- Mobile menu toggle ---
             const menuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            
+
             if (menuButton && mobileMenu) {
+                const setMenu = (open) => {
+                    mobileMenu.classList.toggle('hidden', !open);
+                    menuButton.setAttribute('aria-expanded', String(open));
+                    menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+                };
+
                 menuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
+                    setMenu(mobileMenu.classList.contains('hidden'));
                 });
 
-                // Close mobile menu when a link is clicked
                 mobileMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenu.classList.add('hidden');
-                    });
+                    link.addEventListener('click', () => setMenu(false));
                 });
             }
 
@@ -523,165 +883,168 @@
                 currentYearEl.textContent = new Date().getFullYear();
             }
 
-            // --- "Why Choose Me?" Tab Functionality ---
-            const whyTabs = document.querySelectorAll('.why-tab');
-            const whyPanels = document.querySelectorAll('.why-panel');
+            // --- "Why Choose Me?" tabs ---
+            const whyTabs = Array.from(document.querySelectorAll('.why-tab'));
+            const whyPanels = Array.from(document.querySelectorAll('.why-panel'));
 
-            if (whyTabs.length > 0 && whyPanels.length > 0) {
-                whyTabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const tabNumber = tab.getAttribute('data-tab');
-
-                        // Deactivate all tabs and panels
-                        whyTabs.forEach(t => t.classList.remove('active'));
-                        whyPanels.forEach(p => p.classList.remove('active'));
-
-                        // Activate the clicked tab and corresponding panel
-                        tab.classList.add('active');
-                        const activePanel = document.getElementById(`why-panel-${tabNumber}`);
-                        if (activePanel) {
-                            activePanel.classList.add('active');
-                        }
-                    });
+            const selectTab = (tab) => {
+                whyTabs.forEach(t => {
+                    t.setAttribute('aria-selected', String(t === tab));
+                    t.tabIndex = t === tab ? 0 : -1;
                 });
-            }
+                whyPanels.forEach(p => {
+                    const isActive = p.id === `why-panel-${tab.dataset.tab}`;
+                    p.classList.toggle('active', isActive);
+                    p.hidden = !isActive;
+                });
+            };
 
-            // --- Interactive Map Functionality (Leaflet.js) ---
-            const mapElement = document.getElementById('map');
-            if (mapElement) {
-                
+            whyTabs.forEach((tab, i) => {
+                tab.addEventListener('click', () => selectTab(tab));
+                tab.addEventListener('keydown', (e) => {
+                    const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+                    if (!(e.key in keys)) return;
+                    e.preventDefault();
+                    const next = whyTabs[(i + keys[e.key] + whyTabs.length) % whyTabs.length];
+                    selectTab(next);
+                    next.focus();
+                });
+            });
+
+            // --- Interactive map (Leaflet) ---
+            const walks = [
+                {
+                    lat: 50.413, lng: -5.097,
+                    title: 'Fistral Beach',
+                    img: 'images/fistral-beach.jpg',
+                    desc: 'The classic. Perfect for high-energy dogs who love to run, chase balls and splash in the surf on wide-open sands.'
+                },
+                {
+                    lat: 50.405985, lng: -5.085767,
+                    title: 'The Gannel Estuary',
+                    img: 'images/gannel-estuary.jpg',
+                    desc: 'A beautiful tidal estuary walk. Best at low tide for sandy paths and paddling, and a calm alternative to the busy beaches.'
+                },
+                {
+                    lat: 50.377267, lng: -5.131551,
+                    title: 'Elenglaze Footpath',
+                    img: 'images/elenglaze-footpath.jpg',
+                    desc: 'A hidden gem near Cubert. This gentle footpath follows a stream all the way down to the dunes at Holywell Bay.'
+                },
+                {
+                    lat: 50.411794, lng: -5.032314,
+                    title: 'The SANG, Nansledan',
+                    img: 'images/the-sang-nansledan.jpg',
+                    desc: 'A popular spot near Nansledan. These enclosed fields are safe for off-lead fun, with a stream for dogs to play in.'
+                },
+                {
+                    lat: 50.413809, lng: -5.000081,
+                    title: 'Colan Woods',
+                    img: 'images/colan-woods.jpg',
+                    desc: 'A peaceful woodland trail following a stream. Great for shaded walks, with dogs on-lead near the houses.'
+                }
+            ];
+
+            const initMap = () => {
+                const mapElement = document.getElementById('map');
+                if (!mapElement || typeof L === 'undefined') return;
+
                 const isMobile = window.innerWidth < 768;
 
-                // 1. Initialize the map
                 const map = L.map('map', {
-                    scrollWheelZoom: false, // Always disable scroll wheel zoom
-                    dragging: !isMobile     // Disable dragging on mobile
+                    scrollWheelZoom: false,
+                    dragging: !isMobile
                 }).setView([50.405, -5.065], 12);
 
-                // 2. Add the map tile layer
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
-                
+
                 if (isMobile) {
                     map.zoomControl.setPosition('bottomright');
                 }
 
-                // 3. Define our custom pulsing icon
                 const pulsingIcon = L.divIcon({
                     className: 'leaflet-div-icon',
-                    html: `<div class="pulsing-hotspot"></div>`,
-                    iconSize: [24, 24],   
-                    iconAnchor: [12, 12]  
+                    html: '<div class="pulsing-hotspot"></div>',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
                 });
 
-                // 4. Define the walk locations and popups
-                const walks = [
-                    {
-                        lat: 50.413, lng: -5.097, // Fistral
-                        title: 'Fistral Beach',
-                        img: 'images/Fistral.image.jpg',
-                        desc: 'The classic! Perfect for high-energy dogs who love to run, chase balls, and splash in the surf on wide-open sands.'
-                    },
-                    {
-                        lat: 50.405985, lng: -5.085767, // The Gannel
-                        title: 'The Gannel Estuary',
-                        img: 'images/The Gannel.Image.145034.jpg',
-                        desc: 'A beautiful, tidal estuary walk. Best at low tide for sandy paths and paddling. A calm alternative to the busy beaches.'
-                    },
-                    {
-                        lat: 50.377267, lng: -5.131551, // Elenglaze
-                        title: 'Elenglaze Footpath',
-                        img: 'images/Elenglaze footpath.Image.193734.jpg',
-                        desc: 'A hidden gem near Cubert. This lovely, gentle footpath follows a stream all the way down to the dunes at Holywell Bay.'
-                    },
-                    {
-                        lat: 50.411794, lng: -5.032314, // The SANG
-                        title: 'The SANG, Nansledan',
-                        img: 'images/The SANG.Image.151807.jpg',
-                        desc: 'A fantastic, popular spot near Nansledan. These enclosed fields are safe for off-lead fun, with a stream for dogs to play in.'
-                    },
-                    {
-                        lat: 50.413809, lng: -5.000081, // Colan Woods
-                        title: 'Colan Woods',
-                        img: 'images/Colan woods.Image.192414.jpg',
-                        desc: 'A peaceful woodland trail following a stream. Great for shaded walks (dogs on-lead near houses).'
-                    }
-                ];
-
-                // 5. Add markers and popups to the map
                 walks.forEach(walk => {
                     const popupContent = `
-                        <img src="${walk.img}" alt="${walk.title}">
-                        <h4>${walk.title}</h4>
+                        <img src="${walk.img}" alt="${walk.title}, one of our regular dog walking spots near Newquay" loading="lazy">
+                        <h3>${walk.title}</h3>
                         <p>${walk.desc}</p>
                     `;
 
-                    const marker = L.marker([walk.lat, walk.lng], {icon: pulsingIcon})
+                    L.marker([walk.lat, walk.lng], { icon: pulsingIcon, title: walk.title, alt: walk.title })
                         .addTo(map)
-                        .bindPopup(popupContent, {
-                            autoPanPadding: L.point(50, 50) // Generous 50px padding
+                        .bindPopup(popupContent, { autoPanPadding: L.point(50, 50) })
+                        // Popups are sized before the image loads, so re-measure once it arrives.
+                        .on('popupopen', (e) => {
+                            const img = e.popup.getElement().querySelector('img');
+                            if (!img) return;
+                            if (img.complete) {
+                                e.popup.update();
+                            } else {
+                                img.addEventListener('load', () => e.popup.update(), { once: true });
+                            }
                         });
-
-                    // --- THIS IS THE FIX ---
-                    // When a popup opens, find its image and add an 'onload' event
-                    marker.on('popupopen', (e) => {
-                        const popup = e.popup;
-                        const img = popup.getElement().querySelector('img');
-                        
-                        // When the image finishes loading, tell the popup to update
-                        img.onload = () => {
-                            popup.update();
-                        };
-                        
-                        // If the image is already cached, update immediately
-                        if (img.complete) {
-                            popup.update();
-                        }
-                    });
-                    // --- END OF FIX ---
                 });
+            };
+
+            // Leaflet is deferred, so wait for it if it has not arrived yet.
+            if (typeof L !== 'undefined') {
+                initMap();
+            } else {
+                window.addEventListener('load', initMap, { once: true });
             }
-            // --- End of new map script ---
 
-
-            // --- Lightbox Gallery Functionality ---
-            const galleryImages = document.querySelectorAll('#gallery img');
+            // --- Lightbox gallery ---
+            const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
             const lightboxOverlay = document.getElementById('lightbox-overlay');
             const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxSource = document.getElementById('lightbox-source');
             const lightboxClose = document.getElementById('lightbox-close');
             const lightboxPrev = document.getElementById('lightbox-prev');
             const lightboxNext = document.getElementById('lightbox-next');
 
-            if (galleryImages.length > 0 && lightboxOverlay) {
+            if (galleryItems.length > 0 && lightboxOverlay) {
                 let currentIndex = 0;
-                const imageSources = Array.from(galleryImages).map(img => img.src);
+                let lastFocused = null;
 
-                function showImage(index) {
-                    if (index < 0) {
-                        index = imageSources.length - 1; // Wrap to end
-                    } else if (index >= imageSources.length) {
-                        index = 0; // Wrap to start
-                    }
-                    currentIndex = index;
-                    lightboxImg.src = imageSources[currentIndex];
+                const showImage = (index) => {
+                    currentIndex = (index + galleryItems.length) % galleryItems.length;
+                    const item = galleryItems[currentIndex];
+                    lightboxSource.srcset = item.dataset.fullWebp || '';
+                    lightboxImg.src = item.dataset.full;
+                    lightboxImg.alt = item.dataset.caption || '';
+                };
+
+                const openLightbox = (index) => {
+                    lastFocused = document.activeElement;
+                    showImage(index);
                     lightboxOverlay.classList.remove('hidden');
-                }
+                    document.body.style.overflow = 'hidden';
+                    lightboxClose.focus();
+                };
 
-                galleryImages.forEach((img, index) => {
-                    img.addEventListener('click', () => {
-                        showImage(index);
-                    });
-                });
-
-                lightboxClose.addEventListener('click', () => {
+                const closeLightbox = () => {
                     lightboxOverlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    if (lastFocused) lastFocused.focus();
+                };
+
+                galleryItems.forEach((item, index) => {
+                    item.addEventListener('click', () => openLightbox(index));
                 });
+
+                lightboxClose.addEventListener('click', closeLightbox);
 
                 lightboxOverlay.addEventListener('click', (e) => {
-                    if (e.target === lightboxOverlay) {
-                        lightboxOverlay.classList.add('hidden');
-                    }
+                    if (e.target === lightboxOverlay) closeLightbox();
                 });
 
                 lightboxPrev.addEventListener('click', (e) => {
@@ -695,20 +1058,20 @@
                 });
 
                 document.addEventListener('keydown', (e) => {
-                    if (!lightboxOverlay.classList.contains('hidden')) {
-                        if (e.key === 'ArrowLeft') {
-                            showImage(currentIndex - 1);
-                        } else if (e.key === 'ArrowRight') {
-                            showImage(currentIndex + 1);
-                        } else if (e.key === 'Escape') {
-                            lightboxOverlay.classList.add('hidden');
-                        }
+                    if (lightboxOverlay.classList.contains('hidden')) return;
+                    if (e.key === 'ArrowLeft') showImage(currentIndex - 1);
+                    else if (e.key === 'ArrowRight') showImage(currentIndex + 1);
+                    else if (e.key === 'Escape') closeLightbox();
+                    else if (e.key === 'Tab') {
+                        // Keep focus inside the dialog while it is open.
+                        e.preventDefault();
+                        lightboxClose.focus();
                     }
                 });
             }
 
         });
     </script>
-    
+
 </body>
 </html>
